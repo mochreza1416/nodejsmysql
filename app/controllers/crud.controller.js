@@ -78,8 +78,55 @@ exports.update = (req, res) => {
     });
 };
 
-exports.delete = (req, res) => {};
+exports.delete = (req, res) => {
+  const id = req.params.id;
 
-exports.deleteAll = (req, res) => {};
+  Crud.destroy({
+    where: { id: id },
+  })
+    .then((result) => {
+      if (result == 1) {
+        res.send({
+          message: "Crud was deleted successfully",
+        });
+      } else {
+        res.send({
+          message: `Cannot delete crud with id=${id}`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Could not delete crud with id=" + id,
+      });
+    });
+};
 
-exports.findAllPublished = (req, res) => {};
+exports.deleteAll = (req, res) => {
+  Crud.destroy({
+    where: {},
+    truncate: false,
+  })
+    .then((result) => {
+      res.send({
+        message: `${result} Crud was deleted successfully`,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occured while removing all posts",
+      });
+    });
+};
+
+exports.findAllPublished = (req, res) => {
+  Crud.findAll({ where: { published: true } })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occured while find Crud",
+      });
+    });
+};
